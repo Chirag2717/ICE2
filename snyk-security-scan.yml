@@ -1,35 +1,28 @@
 name: Snyk Security Scan
-
+ 
 on:
   push:
     branches:
       - main
-
+ 
 jobs:
-  security_scan:
+  security:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
-
+ 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-
-      - name: Install dependencies
+ 
+      - name: Install Dependencies
         run: npm install
-
-      - name: Install Snyk CLI
-        run: npm install -g snyk
-
-      - name: Authenticate Snyk
-        run: snyk auth ${{ secrets.4e50181a-7863-446c-860f-ee806e4cab20 }}
-
+ 
       - name: Run Snyk Security Scan
-        run: snyk test --all-projects
-        continue-on-error: true
-
-      - name: Monitor dependencies
-        run: snyk monitor
-        continue-on-error: true
+        uses: snyk/actions/node@master
+        with:
+          args: --severity-threshold=medium
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
